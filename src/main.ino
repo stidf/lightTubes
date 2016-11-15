@@ -38,10 +38,13 @@ Example sketch for driving Adafruit WS2801 pixels!
 
 int const dataPin  = 2;
 int const clockPin = 3;
-int const xDataPin = A0;
-int const yDataPin = A1;
-int const zDataPin = A2;
-int const modeSwitchPin = A3;
+int const modeSwitchPin = A0;
+int const xDataPinTop = A1;
+int const yDataPinTop = A2;
+int const zDataPinTop = A3;
+int const xDataPinBot = A4;
+int const yDataPinBot = A5;
+int const zDataPinBot = A6;
 int const maxModeTypes=6;
 
 Adafruit_WS2801 strip = Adafruit_WS2801(32, dataPin, clockPin);
@@ -132,7 +135,7 @@ double zArbatraryAcceleration (){
   //resturns a value between -1 and 1 for the current G reading.
   double zAccel=0;
   double zScaledAccel=0;
-  zAccel = analogRead(zDataPin);
+  zAccel = analogRead(zDataPinTop);
   zScaledAccel = zAccel/1028*2-1;
   return zScaledAccel;
 }
@@ -141,7 +144,7 @@ double yArbatraryAcceleration (){
   //resturns a value between -1 and 1 for the current G reading.
   double yAccel=0;
   double yScaledAccel=0;
-  yAccel = analogRead(yDataPin);
+  yAccel = analogRead(yDataPinTop);
   yScaledAccel = yAccel/1028*2-1;
   return yScaledAccel;
 }
@@ -150,7 +153,7 @@ double xArbatraryAcceleration (){
   //resturns a value between -1 and 1 for the current G reading.
   double xAccel=0;
   double xScaledAccel=0;
-  xAccel = analogRead(xDataPin);
+  xAccel = analogRead(xDataPinTop);
   xScaledAccel = xAccel/1028*2-1;
   return xScaledAccel;
 }
@@ -159,7 +162,7 @@ double zScaledAcceleration (){
   //resturns a value between -1 and 1 for the current G reading.
   double zAccel=0;
   double zScaledAccel=0;
-  zAccel = analogRead(zDataPin);
+  zAccel = analogRead(zDataPinTop);
   zScaledAccel = zAccel/1028*2*accelScale-accelScale;
   return zScaledAccel;
 }
@@ -168,7 +171,7 @@ double yScaledAcceleration (){
   //returns a value between -1 and 1 for the current G reading.
   double yAccel=0;
   double yScaledAccel=0;
-  yAccel = analogRead(yDataPin);
+  yAccel = analogRead(yDataPinTop);
   yScaledAccel = yAccel/1028*2*accelScale-accelScale;
   return yScaledAccel;
 }
@@ -177,7 +180,7 @@ double xScaledAcceleration (){
   //resturns a value between -1 and 1 for the current G reading.
   double xAccel=0;
   double xScaledAccel=0;
-  xAccel = analogRead(xDataPin);
+  xAccel = analogRead(xDataPinTop);
   xScaledAccel = xAccel/1028*2*accelScale-accelScale;
   return xScaledAccel;
 }
