@@ -45,14 +45,15 @@ int const zDataPinTop = A3;
 int const xDataPinBot = A4;
 int const yDataPinBot = A5;
 int const zDataPinBot = A6;
-int const maxModeTypes=6;
+int const maxModeTypes=10;
 
 Adafruit_WS2801 strip = Adafruit_WS2801(32, dataPin, clockPin);
 
 int accelScale=16;
-int stripPeriod=500;
+int stripPeriod=250; //refresh rate of strip in ms
 int knobPotResistance = 10000;
 int knobVoltDividerResistance = 10000;
+int marchLowerPeriodLimit = 100;
 
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000L)
@@ -87,10 +88,10 @@ void loop() {
   Serial.println(", ");
 
   if(currentMode==1){
-    rainbowCycle(stripPeriod/50);
+    rainbowCycle(stripPeriod);
   }
   else if(currentMode==2){
-    rainbow(stripPeriod/10);
+    rainbow(stripPeriod);
   }
   else if(currentMode==3){
     randomColorMarch(currentMode, stripPeriod);
@@ -99,22 +100,33 @@ void loop() {
     accelRainbow(currentMode, stripPeriod);
   }
   else if(currentMode==5){
-    colorWipe(Color(255,0,0),stripPeriod/3);
-    colorWipe(Color(0,255,0),stripPeriod/3);
-    colorWipe(Color(0,0,255),stripPeriod/3);
+    colorFill(Color(255,0,0),stripPeriod);
+    delay(stripPeriod);
+    colorFill(Color(0,255,0),stripPeriod);
+    delay(stripPeriod);
+    colorFill(Color(0,0,255),stripPeriod);
+    delay(stripPeriod);
   }
   else if(currentMode==6){
     stripTest(currentMode, stripPeriod);
   }
   else if(currentMode==7){
     colorWipe(Color(255,0,0),stripPeriod);
+    delay(stripPeriod);
+    colorFill(Color(0,255,0),stripPeriod);
+    delay(stripPeriod);
   }
   else if(currentMode==8){
     colorWipe(Color(0,255,0),stripPeriod);
-
+    delay(stripPeriod);
+    colorFill(Color(0,0,255),stripPeriod);
+    delay(stripPeriod);
   }
   else if(currentMode==9){
     colorWipe(Color(0,0,255),stripPeriod);
+    delay(stripPeriod);
+    colorFill(Color(255,0,0),stripPeriod);
+    delay(stripPeriod);
   }
   else if(currentMode==10){
 
@@ -220,9 +232,9 @@ unsigned long Wheel(byte WheelPos)
 /////End help function sections
 
 
-void rainbow(int wait) {
+void rainbow(int stripPeriod) {
   int i, j;
-
+  int wait = stripPeriod/strip.numPixels();
   for (j=0; j < 256; j++) {     // 3 cycles of all 256 colors in the wheel
     for (i=0; i < strip.numPixels(); i++) {
       strip.setPixelColor(i, Wheel( (i + j) % 255));
@@ -234,9 +246,9 @@ void rainbow(int wait) {
 
 // Slightly different, this one makes the rainbow wheel equally distributed
 // along the chain
-void rainbowCycle(int wait) {
+void rainbowCycle(int stripPeriod) {
   int i, j;
-
+  int wait = stripPeriod/strip.numPixels();
   for (j=0; j < 256 * 5; j++) {     // 5 cycles of all 25 colors in the wheel
     for (i=0; i < strip.numPixels(); i++) {
       // tricky math! we use each pixel as a fraction of the full 96-color wheel
@@ -252,9 +264,9 @@ void rainbowCycle(int wait) {
 
 // fill the dots one after the other with said color
 // good for testing purposes
-void colorWipe(unsigned long c, int wait) {
+void colorWipe(unsigned long c, int stripPeriod) {
   int i;
-
+  int wait = stripPeriod/strip.numPixels();
   for (i=0; i < strip.numPixels(); i++) {
     strip.setPixelColor(i, c);
     strip.show();
@@ -262,8 +274,19 @@ void colorWipe(unsigned long c, int wait) {
   }
 }
 
-void stripTest(int currentMode, int wait){
+void colorFill(unsigned long c, int stripPeriod){
+  int i;
+  int wait = stripPeriod/strip.numPixels();
+  for (i=0; i < strip.numPixels(); i++) {
+    strip.setPixelColor(i, c);
+  }
+  strip.show();
+  delay(wait);
+}
+
+void stripTest(int currentMode, int stripPeriod){
   //Sets all colors to green and then marches one set of RB down the track
+  int wait = stripPeriod/4;
   int modeValue = currentMode;
   int tick = 1;
   boolean running = true;
@@ -271,6 +294,8 @@ void stripTest(int currentMode, int wait){
 
   while(running){
     currentMode=displayMode();
+    Serial.print(currentMode);
+    Serial.println(", ");
     if(currentMode!=modeValue){
       running=false;
     }
@@ -279,10 +304,10 @@ void stripTest(int currentMode, int wait){
     }
     for(int x=0; x<strip.numPixels();x++){
       if (x==tick){
-        lightStringArray[x]=150;
+        lightStringArray[x]=170;
       }
       if(x==tick-1){
-        lightStringArray[x]=255;
+        lightStringArray[x]=85;
       }
       strip.setPixelColor(x,Wheel(lightStringArray[x]));
     }
@@ -294,17 +319,89 @@ void stripTest(int currentMode, int wait){
 
 
 
-void randomColorMarch(int currentMode,int wait){
+
+void accelRainbow(int currentMode, int stripPeriod){
+  //produces a rainbow of colors that marches down the strip. The color can be shifted by the accelerometer up or down the color wheel.
+  int wait = stripPeriod/strip.numPixels();
+  if (wait<marchLowerPeriodLimit){
+    wait = marchLowerPeriodLimit;
+  }
+  int modeValue = currentMode;
+  int startColor = random(255);
+  int colorShift;
+  double deltaZ;
+  double shiftFactor=5;
+  double shiftAmplification = 16;
+  int lastShift=0;
+  boolean running = true;
+  int lightStringArray[strip.numPixels()];
+  unsigned long c = Color(255,255,255);
+  for(int i=0;i<strip.numPixels();i++){
+    lightStringArray[i]=startColor;
+  }
+  while(running){
+    currentMode=displayMode();
+    if(currentMode!=modeValue){
+      running=false;
+    }
+    Serial.print("Mode: ");
+    Serial.print(currentMode);
+    Serial.print(", | ");
+    /* read accelerometer get values
+    modify the color that is coming up*/
+    deltaZ=zScaledAcceleration();
+    colorShift=(deltaZ-1)*shiftAmplification+shiftFactor;
+    if(abs(colorShift)-abs(lastShift)<shiftFactor){
+      lastShift=colorShift;
+      colorShift=shiftFactor;
+    }
+    else {
+      lastShift=colorShift;
+    }
+
+    Serial.print("Zaccel: ");
+    Serial.print(deltaZ);
+    Serial.print(", | Color Shift: ");
+    Serial.print(colorShift);
+    Serial.print(", Last Shift: ");
+    Serial.println(lastShift);
+    startColor=(startColor+colorShift)%255;
+    lightStringArray[strip.numPixels()-1]=startColor; // sets new color to end of line
+    for(int j=0; j< strip.numPixels(); j++){
+        //writes all the color pixels
+      c=Wheel(lightStringArray[j]);
+      strip.setPixelColor(j, c);
+    }
+    strip.show();
+    currentMode=displayMode();
+    if(currentMode!=modeValue){
+      running=false;
+    }
+    delay(wait);
+    for (int i=0; i < strip.numPixels(); i++) {
+      //moves all of the color pixels down by one.
+        lightStringArray[i]=lightStringArray[i+1];
+    }
+  }
+}
+
+void randomColorMarch(int currentMode, int stripPeriod){
   //picks a random color and marches it down the strand.
+  int wait = stripPeriod/strip.numPixels();
+  if (wait<marchLowerPeriodLimit){
+    wait = marchLowerPeriodLimit;
+  }
   int modeValue = currentMode;
   boolean running = true;
   int lightStringArray[strip.numPixels()];
   unsigned long c = Color(0,0,0);
   for(int i=0;i<strip.numPixels();i++){
-    lightStringArray[i]=1;
+    lightStringArray[i]=random(255);
   }
   while(running){
     currentMode=displayMode();
+    Serial.print(currentMode);
+    Serial.println(", ");
     if(currentMode!=modeValue){
       running=false;
     }
@@ -314,57 +411,25 @@ void randomColorMarch(int currentMode,int wait){
         c=Wheel(lightStringArray[j]);
         strip.setPixelColor(j, c);
       }
-        strip.show();
-        for(int k = 0; k<strip.numPixels()-1;k++){
-          lightStringArray[k]=lightStringArray[k+1];
-        }
-        delay(wait);
+      strip.show();
+      for(int k = 0; k<strip.numPixels()-1;k++){
+        lightStringArray[k]=lightStringArray[k+1];
+      }
+      currentMode=displayMode();
+      if(currentMode!=modeValue){
+        running=false;
+      }
+      delay(wait);
     }
   }
 }
-
-void accelRainbow(int currentMode, int wait){
-  //produces a rainbow of colors that marches down the strip. The color can be shifted by the accelerometer up or down the color wheel.
-  int modeValue = currentMode;
-  int startColor = 0;
-  int deltaZ;
-  double shiftFactor=.5;
-  int lastShift=0;
-  boolean running=true;
-  int lightStringArray[strip.numPixels()];
-  unsigned long c = Color(0,0,0);
-  for(int i=0;i<strip.numPixels();i++){
-    lightStringArray[i]=1;
-  }
-  while(running){
-    currentMode=displayMode();
-    if(currentMode!=modeValue){
-      running=false;
-    }
-    /* read accelerometer get values
-    modify the color that is coming up*/
-    deltaZ=(zArbatraryAcceleration()*accelScale-1)/accelScale*255*shiftFactor;
-    lastShift=deltaZ;
-    Serial.print("color shift: ");
-    Serial.println(deltaZ);
-    startColor=(startColor+1+deltaZ)%255;
-    lightStringArray[strip.numPixels()-1]=startColor; // sets new color to end of line
-    for(int j=0; j< strip.numPixels(); j++){
-        //writes all the color pixels
-      c=Wheel(lightStringArray[j]);
-      strip.setPixelColor(j, c);
-    }
-    strip.show();
-    delay(wait);
-    for (int i=0; i < strip.numPixels(); i++) {
-      //moves all of the color pixels down by one.
-        lightStringArray[i]=lightStringArray[i+1];
-    }
-  }
-}
-
-void randomRainbowMarch(int currentMode, int wait){
+/*
+void randomRainbowMarch(int currentMode, int stripPeriod){
   //picks a random color and marches it down the strand.
+  int wait = stripPeriod/strip.numPixels();
+  if (wait<marchLowerPeriodLimit){
+    wait = marchLowerPeriodLimit;
+  }
   int modeValue = currentMode;
   boolean running=true;
   int lightStringArray[strip.numPixels()];
@@ -374,6 +439,8 @@ void randomRainbowMarch(int currentMode, int wait){
   }
   while(running){
     currentMode=displayMode();
+    Serial.print(currentMode);
+    Serial.println(", ");
     if(currentMode!=modeValue){
       running=false;
     }
@@ -389,3 +456,4 @@ void randomRainbowMarch(int currentMode, int wait){
     delay(wait);
   }
 }
+*/
