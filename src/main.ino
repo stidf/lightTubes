@@ -318,7 +318,80 @@ void stripTest(int currentMode, int stripPeriod){
 }
 
 
+void translatingDot(int currentMode, int stripPeriod){
+  //produces a rainbow of colors that marches down the strip. The color can be shifted by the accelerometer up or down the color wheel.
+  int wait = stripPeriod/strip.numPixels();
+  if (wait<marchLowerPeriodLimit){
+    wait = marchLowerPeriodLimit;
+  }
+  int modeValue = currentMode;
+  int startColor = random(255);
+  int startDotPosition = random(strip.numPixels()-1);
+  int colorShift;
+  boolean running = true;
+  int lightStringArray[strip.numPixels()];
+  double deltaZ;
+  int dotWidth = 3
+  int dotPosition = startDotPosition;
 
+  double shiftFactor=5;
+  double shiftAmplification = 16;
+  int lastShift=0;
+
+  unsigned long c = Color(255,255,255);
+  for(int i=0;i<strip.numPixels();i++){
+    lightStringArray[i]=(startColor+i)%256;
+  }
+  while(running){
+    currentMode=displayMode();
+    if(currentMode!=modeValue){
+      running=false;
+    }
+    Serial.print("Mode: ");
+    Serial.print(currentMode);
+    Serial.print(", | ");
+    /* read accelerometer get values
+    modify the color that is coming up*/
+    deltaZ=zScaledAcceleration();
+    if(abs(colorShift)-abs(lastShift)<shiftFactor){
+      lastShift=colorShift;
+      colorShift=shiftFactor;
+    }
+    else {
+      lastShift=colorShift;
+    }
+
+    Serial.print("Zaccel: ");
+    Serial.print(deltaZ);
+    Serial.print(", | Dot Position: ");
+    Serial.print(dotPosition);
+    Serial.print(", Last Shift: ");
+    Serial.println(lastShift);
+    for(int j=0; j< strip.numPixels(); j++){
+        //writes all the color pixels
+      c=Wheel(lightStringArray[j]);
+      strip.setPixelColor(j, c);
+    }
+    if(dotPosition>0){
+      strip.setPixelColor(dotPosition-1,color(200,200,200));
+    }
+    strip.setPixelColor(dotPosition,color(255,255,255));
+    if(dotPosition<strip.numPixels()-2){
+      strip.setPixelColor(dotPosition+1,color(200,200,200));
+    }
+    strip.show();
+    currentMode=displayMode();
+    if(currentMode!=modeValue){
+      running=false;
+    }
+    delay(wait);
+    for (int i=0; i < strip.numPixels(); i++) {
+      //moves all of the color pixels down by one.
+        lightStringArray[i]=lightStringArray[i+1];
+    }
+    lightStringArray[strip.numPixels()-1] = (lightStringArray[strip.numPixels()-2]+1)%256;
+  }
+}
 
 void accelRainbow(int currentMode, int stripPeriod){
   //produces a rainbow of colors that marches down the strip. The color can be shifted by the accelerometer up or down the color wheel.
@@ -365,7 +438,7 @@ void accelRainbow(int currentMode, int stripPeriod){
     Serial.print(colorShift);
     Serial.print(", Last Shift: ");
     Serial.println(lastShift);
-    startColor=(startColor+colorShift)%255;
+    startColor=(startColor+colorShift)%256;
     lightStringArray[strip.numPixels()-1]=startColor; // sets new color to end of line
     for(int j=0; j< strip.numPixels(); j++){
         //writes all the color pixels
