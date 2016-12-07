@@ -506,7 +506,7 @@ void randomColorMarch(int currentMode, int stripPeriod){
   }
 }
 /*
-void randomRainbowMarch(int currentMode, int stripPeriod){
+void genericMode(int currentMode, int stripPeriod){
   //picks a random color and marches it down the strand.
   int wait = stripPeriod/strip.numPixels();
   if (wait<marchLowerPeriodLimit){
@@ -517,6 +517,7 @@ void randomRainbowMarch(int currentMode, int stripPeriod){
   int lightStringArray[strip.numPixels()];
   unsigned long c = Color(0,0,0);
   for(int i=0;i<strip.numPixels();i++){
+    //sets the strip to the the initial state
     lightStringArray[i]=1;
   }
   while(running){
@@ -524,15 +525,19 @@ void randomRainbowMarch(int currentMode, int stripPeriod){
     Serial.print(currentMode);
     Serial.println(", ");
     if(currentMode!=modeValue){
+      //checks that the button hasn't been pressed or knob hasn't been turned. 
       running=false;
     }
     lightStringArray[strip.numPixels()-1]=random(256);
     for(int j=0; j< strip.numPixels(); j++){
+      //runs through LED array and converts them with the color wheel and then assigns them to the strip.
       c=Wheel(lightStringArray[j]);
       strip.setPixelColor(j, c);
     }
+    //displays the strip with the new array data
     strip.show();
     for(int k = 0; k<strip.numPixels()-1;k++){
+      //marches everything down the strip by one LED
       lightStringArray[k]=lightStringArray[k+1];
     }
     delay(wait);
