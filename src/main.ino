@@ -45,7 +45,7 @@ int const zDataPinTop = A3;
 int const xDataPinBot = A4;
 int const yDataPinBot = A5;
 int const zDataPinBot = A6;
-int const maxModeTypes=10;
+int const maxModeTypes = 11;
 
 Adafruit_WS2801 strip = Adafruit_WS2801(32, dataPin, clockPin);
 
@@ -129,7 +129,7 @@ void loop() {
     delay(stripPeriod);
   }
   else if(currentMode==10){
-
+    translatingDot(currentMode, stripPeriod);
   }
 }
 /* Helper functions */
@@ -321,7 +321,7 @@ void stripTest(int currentMode, int stripPeriod){
 void translatingDot(int currentMode, int stripPeriod){
   //produces a rainbow of colors that marches down the strip. The color can be shifted by the accelerometer up or down the color wheel.
   int wait = stripPeriod/strip.numPixels();
-  if (wait<marchLowerPeriodLimit){
+  if (wait < marchLowerPeriodLimit){
     wait = marchLowerPeriodLimit;
   }
   int modeValue = currentMode;
@@ -331,7 +331,7 @@ void translatingDot(int currentMode, int stripPeriod){
   boolean running = true;
   int lightStringArray[strip.numPixels()];
   double deltaZ;
-  int dotWidth = 3
+  int dotWidth = 3;
   int dotPosition = startDotPosition;
 
   double shiftFactor=5;
@@ -353,14 +353,23 @@ void translatingDot(int currentMode, int stripPeriod){
     /* read accelerometer get values
     modify the color that is coming up*/
     deltaZ=zScaledAcceleration();
-    if(abs(colorShift)-abs(lastShift)<shiftFactor){
-      lastShift=colorShift;
-      colorShift=shiftFactor;
+    if(deltaZ>0){
+      lastShift = 1;
+      dotPosition++;
+      if(dotPosition > strip.numPixels()-1){
+        dotPosition = strip.numPixels()-1;
+      }
     }
-    else {
-      lastShift=colorShift;
+    else if(deltaZ<0){
+      lastShift = -1;
+      dotPosition--;
+      if(dotPosition < 0){
+        dotPosition = 0;
+      }
     }
-
+    else{
+      lastShift = 0;
+    }
     Serial.print("Zaccel: ");
     Serial.print(deltaZ);
     Serial.print(", | Dot Position: ");
@@ -373,11 +382,11 @@ void translatingDot(int currentMode, int stripPeriod){
       strip.setPixelColor(j, c);
     }
     if(dotPosition>0){
-      strip.setPixelColor(dotPosition-1,color(200,200,200));
+      strip.setPixelColor(dotPosition-1,Color(200,200,200));
     }
-    strip.setPixelColor(dotPosition,color(255,255,255));
+    strip.setPixelColor(dotPosition,Color(255,255,255));
     if(dotPosition<strip.numPixels()-2){
-      strip.setPixelColor(dotPosition+1,color(200,200,200));
+      strip.setPixelColor(dotPosition+1,Color(200,200,200));
     }
     strip.show();
     currentMode=displayMode();
