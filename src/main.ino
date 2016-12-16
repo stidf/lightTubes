@@ -100,27 +100,16 @@ void loop() {
     accelRainbow(currentMode, stripPeriod);
   }
   else if(currentMode==5){
-    colorFill(Color(255,0,0),stripPeriod);
-    delay(stripPeriod);
-    colorFill(Color(0,255,0),stripPeriod);
-    delay(stripPeriod);
-    colorFill(Color(0,0,255),stripPeriod);
-    delay(stripPeriod);
+    translatingDot(currentMode, stripPeriod);
   }
   else if(currentMode==6){
-    stripTest(currentMode, stripPeriod);
+    lightSaber(currentMode, stripPeriod);
   }
   else if(currentMode==7){
-    colorWipe(Color(255,0,0),stripPeriod);
-    delay(stripPeriod);
-    colorFill(Color(0,255,0),stripPeriod);
-    delay(stripPeriod);
+    translatingDotRandom(currentMode, stripPeriod);
   }
   else if(currentMode==8){
-    colorWipe(Color(0,255,0),stripPeriod);
-    delay(stripPeriod);
-    colorFill(Color(0,0,255),stripPeriod);
-    delay(stripPeriod);
+    stripTest(currentMode, stripPeriod);
   }
   else if(currentMode==9){
     colorWipe(Color(0,0,255),stripPeriod);
@@ -129,7 +118,12 @@ void loop() {
     delay(stripPeriod);
   }
   else if(currentMode==10){
-    translatingDot(currentMode, stripPeriod);
+    colorFill(Color(255,0,0),stripPeriod);
+    delay(stripPeriod);
+    colorFill(Color(0,255,0),stripPeriod);
+    delay(stripPeriod);
+    colorFill(Color(0,0,255),stripPeriod);
+    delay(stripPeriod);
   }
 }
 /* Helper functions */
@@ -294,6 +288,7 @@ void stripTest(int currentMode, int stripPeriod){
 
   while(running){
     currentMode=displayMode();
+    Serial.print("Strip Test | Mode: ");
     Serial.print(currentMode);
     Serial.println(", ");
     if(currentMode!=modeValue){
@@ -347,7 +342,7 @@ void translatingDot(int currentMode, int stripPeriod){
     if(currentMode!=modeValue){
       running=false;
     }
-    Serial.print("Mode: ");
+    Serial.print("Translating Dot | Mode: ");
     Serial.print(currentMode);
     Serial.print(", | ");
     /* read accelerometer get values
@@ -431,7 +426,7 @@ void translatingDotRandom(int currentMode, int stripPeriod){
     if(currentMode!=modeValue){
       running=false;
     }
-    Serial.print("Mode: ");
+    Serial.print("Translating Dot Random | Mode: ");
     Serial.print(currentMode);
     Serial.print(", | ");
     /* read accelerometer get values
@@ -511,7 +506,7 @@ void accelRainbow(int currentMode, int stripPeriod){
     if(currentMode!=modeValue){
       running=false;
     }
-    Serial.print("Mode: ");
+    Serial.print("Accelleration Rainbow | Mode: ");
     Serial.print(currentMode);
     Serial.print(", | ");
     /* read accelerometer get values
@@ -567,6 +562,7 @@ void randomColorMarch(int currentMode, int stripPeriod){
   }
   while(running){
     currentMode=displayMode();
+    Serial.print("Random Color March | Mode: ");
     Serial.print(currentMode);
     Serial.println(", ");
     if(currentMode!=modeValue){
@@ -611,7 +607,7 @@ void studderRainbow(int currentMode, int stripPeriod){
   lastColor = lightStringArray[strip.numPixels()-1];
   while(running){
     currentMode=displayMode();
-    Serial.print("Current Mode: ")
+    Serial.print("Studder Rainbow | Mode: ");
     Serial.print(currentMode);
     Serial.print(", ");
     if(currentMode!=modeValue){
@@ -639,6 +635,48 @@ void studderRainbow(int currentMode, int stripPeriod){
   }
 }
 
+
+void lightSaber(int currentMode, int stripPeriod){
+  //picks a random color and marches it down the strand.
+  int wait = stripPeriod/strip.numPixels();
+  int bladeColor = 85;
+  int bladeColorVibrate = 3;
+  int bladeColorState = bladeColor;
+  if (wait<marchLowerPeriodLimit){
+    wait = marchLowerPeriodLimit;
+  }
+  int modeValue = currentMode;
+  boolean running=true;
+  int lightStringArray[strip.numPixels()];
+  unsigned long c = Color(0,0,0);
+  for(int i=0;i<strip.numPixels();i++){
+    //sets the strip to the the initial state
+    lightStringArray[i] = bladeColor;
+  }
+  while(running){
+    currentMode=displayMode();
+    if(currentMode!=modeValue){
+      //checks that the button hasn't been pressed or knob hasn't been turned.
+      running=false;
+    }
+    bladeColorState = bladeColor + random(bladeColorVibrate * (-1), bladeColorVibrate) + bladeColorVibrate * (zScaledAcceleration()-1);
+    for(int j=0; j< strip.numPixels(); j++){
+      //runs through LED array and converts them with the color wheel and then assigns them to the strip.
+      lightStringArray[j] = bladeColorState;
+      c=Wheel(lightStringArray[j]);
+      strip.setPixelColor(j, c);
+    }
+    //displays the strip with the new array data
+    strip.show();
+    Serial.print("Lightsaber | Mode: ");
+    Serial.print(currentMode);
+    Serial.print(", Blade Color: ");
+    Serial.println(bladeColorState);
+    delay(wait);
+  }
+}
+
+
 /*
 void genericMode(int currentMode, int stripPeriod){
   //picks a random color and marches it down the strand.
@@ -656,6 +694,7 @@ void genericMode(int currentMode, int stripPeriod){
   }
   while(running){
     currentMode=displayMode();
+    Serial.print("generic Mode Name | Mode: ")
     Serial.print(currentMode);
     Serial.println(", ");
     if(currentMode!=modeValue){
