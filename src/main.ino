@@ -29,7 +29,7 @@ Example sketch for driving Adafruit WS2801 pixels!
 *****************************************************************************/
 
 /* Adapted by Andrew Gasperini
-
+for use with a Micro and a 32 bit strip of WS2801
 
 
 
@@ -639,8 +639,8 @@ void studderRainbow(int currentMode, int stripPeriod){
 void lightSaber(int currentMode, int stripPeriod){
   //picks a random color and marches it down the strand.
   int wait = stripPeriod/strip.numPixels();
-  int bladeColor = 85;
-  int bladeColorVibrate = 3;
+  int bladeColor = 185;
+  int bladeColorVibrate = 2;
   int bladeColorState = bladeColor;
   if (wait<marchLowerPeriodLimit){
     wait = marchLowerPeriodLimit;
@@ -652,6 +652,8 @@ void lightSaber(int currentMode, int stripPeriod){
   for(int i=0;i<strip.numPixels();i++){
     //sets the strip to the the initial state
     lightStringArray[i] = bladeColor;
+    strip.show();
+    delay(50);
   }
   while(running){
     currentMode=displayMode();
