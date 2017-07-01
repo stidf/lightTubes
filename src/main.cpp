@@ -55,6 +55,8 @@ int knobPotResistance = 10000;
 int knobVoltDividerResistance = 10000;
 int marchLowerPeriodLimit = 100;
 
+int volatile lightMode = 0;
+
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000L)
   clock_prescale_set(clock_div_1); // Enable 16 MHz on Trinket
