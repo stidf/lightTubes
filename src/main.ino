@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #include "Adafruit_WS2801.h"
 #include "SPI.h" // Comment out this line if using Trinket or Gemma
 #ifdef __AVR_ATtiny85__
