@@ -46,7 +46,7 @@ int const yDataPinBot = A5;
 int const zDataPinBot = A6;
 int const maxModeTypes = 11;
 
-Adafruit_WS2801 strip = Adafruit_WS2801(32, dataPin, clockPin);
+Adafruit_WS2801 strip = Adafruit_WS2801(33, dataPin, clockPin);
 
 int accelScale=16;
 int stripPeriod=250; //refresh rate of strip in ms
