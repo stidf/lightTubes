@@ -54,7 +54,7 @@ int knobPotResistance = 10000;
 int knobVoltDividerResistance = 10000;
 int marchLowerPeriodLimit = 100;
 
-int volatile lightMode = 0;
+int volatile lightMode = 3;
 
 void setup() {
 #if defined(__AVR_ATtiny85__) && (F_CPU == 16000000L)
@@ -581,7 +581,7 @@ void randomColorMarch(int currentMode, int stripPeriod){
       }
       currentMode=displayMode();
       if(currentMode!=modeValue){
-        running=false;
+        //running=false;
       }
       delay(wait);
     }
