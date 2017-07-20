@@ -53,13 +53,14 @@ int knobPotResistance = 10000;
 int knobVoltDividerResistance = 10000;
 int marchLowerPeriodLimit = 100;
 int LEDCount = 33;
-
 Adafruit_WS2801 strip = Adafruit_WS2801(LEDCount, dataPin, clockPin);
 int volatile lightMode = 0;
 int volatile operatingMode = lightMode;
 
 void setup() {
   analogReference(EXTERNAL);
+  pinMode(modeSwitchPin, INPUT_PULLUP);
+
   attachInterrupt(digitalPinToInterrupt(modeSwitchPin), switchMode, FALLING);
   strip.begin();
   Serial.begin(115200);
@@ -251,6 +252,30 @@ double xArbatraryAcceleration (){
   xAccel = analogRead(xDataPinTop);
   xScaledAccel = xAccel/1028*2-1;
   return xScaledAccel;
+}
+
+double trueArbatraryAcceleration(){
+  double xAccel = 0;
+  double yAccel = 0;
+  double zAccel = 0;
+  double trueAccel = 0;
+  xAccel = xArbatraryAcceleration();
+  yAccel = yArbatraryAcceleration();
+  zAccel = zArbatraryAcceleration();
+  trueAccel = sqrt(pow(xAccel,2) + pow(yAccel,2) + pow(zAccel,2));
+  return trueAccel;
+}
+
+double trueScaledAcceleration(){
+  double xAccel = 0;
+  double yAccel = 0;
+  double zAccel = 0;
+  double trueAccel = 0;
+  xAccel = xScaledAcceleration();
+  yAccel = yScaledAcceleration();
+  zAccel = zScaledAcceleration();
+  trueAccel = sqrt(pow(xAccel,2) + pow(yAccel,2) + pow(zAccel,2));
+  return trueAccel;
 }
 
 double zScaledAcceleration (){
@@ -598,7 +623,7 @@ void accelRainbow(int stripPeriod){
     Serial.print(", | ");
     /* read accelerometer get values
     modify the color that is coming up*/
-    deltaZ=zScaledAcceleration();
+    deltaZ=trueScaledAcceleration();
     colorShift=(deltaZ-1)*shiftAmplification+shiftFactor;
     if(abs(colorShift)-abs(lastShift)<shiftFactor){
       lastShift=colorShift;
@@ -748,7 +773,7 @@ void lightSaber(int stripPeriod){
       //checks that the button hasn't been pressed or knob hasn't been turned.
       running=false;
     }
-    bladeColorState = bladeColor + random(bladeColorVibrate * (-1), bladeColorVibrate) + bladeColorVibrate * (zScaledAcceleration()-1);
+    bladeColorState = bladeColor + random(bladeColorVibrate * (-1), bladeColorVibrate) + bladeColorVibrate * (trueScaledAcceleration()-1);
     for(int j=0; j< strip.numPixels(); j++){
       //runs through LED array and converts them with the color wheel and then assigns them to the strip.
       lightStringArray[j] = bladeColorState;
