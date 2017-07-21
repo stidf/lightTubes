@@ -56,10 +56,11 @@ int LEDCount = 33;
 Adafruit_WS2801 strip = Adafruit_WS2801(LEDCount, dataPin, clockPin);
 int volatile lightMode = 0;
 int volatile operatingMode = lightMode;
+unsigned long volatile buttonStamp = 0;
 
 void setup() {
   analogReference(EXTERNAL);
-  pinMode(modeSwitchPin, INPUT_PULLUP);
+  pinMode(modeSwitchPin, INPUT);
 
   attachInterrupt(digitalPinToInterrupt(modeSwitchPin), switchMode, FALLING);
   strip.begin();
@@ -209,7 +210,11 @@ void loop() {
 /* Helper functions */
 
 void switchMode(){
-  lightMode++;
+  unsigned long timeStamp = 0;
+  timeStamp = millis();
+  if(timeStamp-buttonStamp>500){
+    lightMode++;
+  }
   if(lightMode>maxModeTypes){
     lightMode = 1;
   }
