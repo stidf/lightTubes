@@ -1,6 +1,11 @@
 #include "colorHelper.h"
 // Create a 24 bit color value from R,G,B
 #include <arduino.h>
+#include <Adafruit_WS2801.h>
+#include <SPI.h>
+#include "./lightPattern/rainbowCycle.h"
+#include "./lightPattern/rainbow.h"
+#include "./lightPattern/genericPattern.h"
 unsigned long color(byte r, byte g, byte b)
 {
   unsigned long c;

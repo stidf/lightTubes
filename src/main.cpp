@@ -2,22 +2,18 @@
 #include <Adafruit_WS2801.h>
 #include <SPI.h>
 
-#include "../boardConfig/micro.h"
+#include "../config/micro.h"
+#include "../config/hardwareConfiguration.h"
 #include "colorHelper.h"
 #include "accelerometer.h"
-#include "lightPatterns/rainbowCycle.h"
-#include "lightPatterns/rainbow.h"
+// #include "lightPatterns/rainbowCycle.h"
+// #include "lightPatterns/rainbow.h"
 
 void switchPress();
 void statusSerialPrintout();
 
 
-int accelScale=16;
-int stripPeriod=250; //refresh rate of strip in ms
-int knobPotResistance = 10000;
-int knobVoltDividerResistance = 10000;
-int marchLowerPeriodLimit = 100;
-int LEDCount = 32;
+
 int volatile lightMode = 0;
 int volatile operatingMode = lightMode;
 unsigned long volatile buttonStamp = 0;
