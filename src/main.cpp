@@ -5,7 +5,7 @@
 #include "../config/micro.h"
 #include "../config/hardwareConfiguration.h"
 #include "colorHelper.h"
-#include "accelerometer.h"
+#include <accelerometer.h>
 // #include "lightPatterns/rainbowCycle.h"
 // #include "lightPatterns/rainbow.h"
 
