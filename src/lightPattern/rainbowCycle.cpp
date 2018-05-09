@@ -2,7 +2,7 @@
 #include <Adafruit_WS2801.h>
 #include <SPI.h>
 #include "../colorHelper.h"
-#include "../accelerometer.h"
+#include <accelerometer.h>
 #include "rainbowCycle.h"
 
 void rainbowCycle(int stripPeriod, Adafruit_WS2801 strip) {
