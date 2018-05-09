@@ -1,7 +1,11 @@
+<<<<<<< HEAD:src/main.ino
 <<<<<<< HEAD:src/main.cpp
 #include <Arduino.h>
 =======
 >>>>>>> Arduino_branch:src/main.ino
+=======
+#include "arduino.h"
+>>>>>>> PlatformIO:obs/main.ino
 #include "Adafruit_WS2801.h"
 #include "SPI.h" // Comment out this line if using Trinket or Gemma
 #include <accelHelper.h>
@@ -49,6 +53,7 @@ int const modeSwitchPin = A0;
 int const dataPin  = 2;
 int const clockPin = 3;
 int const modeSwitchPin = 7;
+<<<<<<< HEAD:src/main.ino
 >>>>>>> Arduino_branch:src/main.ino
 int const xDataPinTop = A1;
 int const yDataPinTop = A2;
@@ -56,6 +61,14 @@ int const zDataPinTop = A3;
 int const xDataPinBot = A4;
 int const yDataPinBot = A5;
 int const zDataPinBot = A6;
+=======
+int const xDataPinTop = A0;
+int const yDataPinTop = A1;
+int const zDataPinTop = A2;
+int const xDataPinBot = A3;
+int const yDataPinBot = A4;
+int const zDataPinBot = A5;
+>>>>>>> PlatformIO:obs/main.ino
 int const maxModeTypes = 10;
 
 <<<<<<< HEAD:src/main.cpp
@@ -68,7 +81,7 @@ int stripPeriod=250; //refresh rate of strip in ms
 int knobPotResistance = 10000;
 int knobVoltDividerResistance = 10000;
 int marchLowerPeriodLimit = 100;
-int LEDCount = 33;
+int LEDCount = 32;
 Adafruit_WS2801 strip = Adafruit_WS2801(LEDCount, dataPin, clockPin);
 int volatile lightMode = 0;
 int volatile operatingMode = lightMode;
@@ -88,6 +101,7 @@ void setup() {
 
 void loop() {
   // Some example procedures showing how to display to the pixels
+<<<<<<< HEAD:src/main.ino
   double xScaledAccel=0;
   double yScaledAccel=0;
   double zScaledAccel=0;
@@ -103,6 +117,9 @@ void loop() {
   Serial.print(",| ");
   Serial.print(operatingMode);
   Serial.println(", ");
+=======
+  statusSerialPrintout();
+>>>>>>> PlatformIO:obs/main.ino
 
 
   switch (lightMode){
@@ -187,7 +204,7 @@ void loop() {
 void switchPress(){
   unsigned long timeStamp = 0;
   timeStamp = millis();
-  if(timeStamp-buttonStamp>500){
+  if(timeStamp-buttonStamp>1000){
     lightMode++;
   }
   if(lightMode>maxModeTypes){
@@ -199,77 +216,223 @@ void switchPress(){
   Serial.println(lightMode);
 }
 
+<<<<<<< HEAD:src/main.ino
 <<<<<<< HEAD:src/main.cpp
 =======
 double zArbatraryAcceleration (){
+=======
+void statusSerialPrintout(){
+  double xScaledAccelTop=0;
+  double yScaledAccelTop=0;
+  double zScaledAccelTop=0;
+  double vectorScaledAccelTop=0;
+  double xScaledAccelBot=0;
+  double yScaledAccelBot=0;
+  double zScaledAccelBot=0;
+  double vectorScaledAccelBot=0;
+
+
+  xScaledAccelTop = xScaledAccelerationTop();
+  yScaledAccelTop = yScaledAccelerationTop();
+  zScaledAccelTop = zScaledAccelerationTop();
+  vectorScaledAccelTop = vectorScaledAccelerationTop();
+  xScaledAccelBot = xScaledAccelerationBot();
+  yScaledAccelBot = yScaledAccelerationBot();
+  zScaledAccelBot = zScaledAccelerationBot();
+  vectorScaledAccelBot = vectorScaledAccelerationBot();
+
+
+  Serial.print("Top, X:");
+  Serial.print(xScaledAccelTop);
+  Serial.print(", Y:");
+  Serial.print(yScaledAccelTop);
+  Serial.print(", Z:");
+  Serial.print(zScaledAccelTop);
+  Serial.print(", |a|:");
+  Serial.print(vectorScaledAccelTop);
+  Serial.print(",| ");
+  Serial.print("Bot, X:");
+  Serial.print(xScaledAccelBot);
+  Serial.print(", Y:");
+  Serial.print(yScaledAccelBot);
+  Serial.print(", Z:");
+  Serial.print(zScaledAccelBot);
+  Serial.print(", |a|:");
+  Serial.print(vectorScaledAccelBot);
+  Serial.print(",| ");
+  Serial.print(operatingMode);
+  Serial.println(", ");
+
+}
+// Top accelerometer functions
+
+double zArbatraryAccelerationTop (){
+>>>>>>> PlatformIO:obs/main.ino
   //resturns a value between -1 and 1 for the current G reading.
   double zAccel=0;
-  double zScaledAccel=0;
+  double zScaledAccelTop=0;
   zAccel = analogRead(zDataPinTop);
-  zScaledAccel = zAccel/1028*2-1;
-  return zScaledAccel;
+  zScaledAccelTop = zAccel/1028*2-1;
+  return zScaledAccelTop;
 }
 
-double yArbatraryAcceleration (){
+double yArbatraryAccelerationTop (){
   //resturns a value between -1 and 1 for the current G reading.
   double yAccel=0;
-  double yScaledAccel=0;
+  double yScaledAccelTop=0;
   yAccel = analogRead(yDataPinTop);
-  yScaledAccel = yAccel/1028*2-1;
-  return yScaledAccel;
+  yScaledAccelTop = yAccel/1028*2-1;
+  return yScaledAccelTop;
 }
 
-double xArbatraryAcceleration (){
+double xArbatraryAccelerationTop (){
   //resturns a value between -1 and 1 for the current G reading.
   double xAccel=0;
-  double xScaledAccel=0;
+  double xScaledAccelTop=0;
   xAccel = analogRead(xDataPinTop);
-  xScaledAccel = xAccel/1028*2-1;
-  return xScaledAccel;
+  xScaledAccelTop = xAccel/1028*2-1;
+  return xScaledAccelTop;
 }
 
-double trueArbatraryAcceleration(){
+double trueArbatraryAccelerationTop(){
   double xAccel = 0;
   double yAccel = 0;
   double zAccel = 0;
   double trueAccel = 0;
-  xAccel = xArbatraryAcceleration();
-  yAccel = yArbatraryAcceleration();
-  zAccel = zArbatraryAcceleration();
+  xAccel = xArbatraryAccelerationTop();
+  yAccel = yArbatraryAccelerationTop();
+  zAccel = zArbatraryAccelerationTop();
   trueAccel = sqrt(pow(xAccel,2) + pow(yAccel,2) + pow(zAccel,2));
   return trueAccel;
 }
 
-double trueScaledAcceleration(){
+double vectorScaledAccelerationTop(){
   double xAccel = 0;
   double yAccel = 0;
   double zAccel = 0;
   double trueAccel = 0;
-  xAccel = xScaledAcceleration();
-  yAccel = yScaledAcceleration();
-  zAccel = zScaledAcceleration();
+  xAccel = xScaledAccelerationTop();
+  yAccel = yScaledAccelerationTop();
+  zAccel = zScaledAccelerationTop();
   trueAccel = sqrt(pow(xAccel,2) + pow(yAccel,2) + pow(zAccel,2));
   return trueAccel;
 }
 
-double zScaledAcceleration (){
+double zScaledAccelerationTop (){
   //resturns a value between -1 and 1 for the current G reading.
   double zAccel=0;
-  double zScaledAccel=0;
+  double zScaledAccelTop=0;
   zAccel = analogRead(zDataPinTop);
-  zScaledAccel = zAccel/1028*2*accelScale-accelScale;
-  return zScaledAccel;
+  zScaledAccelTop = zAccel/1028*2*accelScale-accelScale;
+  return zScaledAccelTop;
 }
 
-double yScaledAcceleration (){
+double yScaledAccelerationTop (){
   //returns a value between -1 and 1 for the current G reading.
   double yAccel=0;
-  double yScaledAccel=0;
+  double yScaledAccelTop=0;
   yAccel = analogRead(yDataPinTop);
-  yScaledAccel = yAccel/1028*2*accelScale-accelScale;
-  return yScaledAccel;
+  yScaledAccelTop = yAccel/1028*2*accelScale-accelScale;
+  return yScaledAccelTop;
 }
 >>>>>>> Arduino_branch:src/main.ino
+
+<<<<<<< HEAD:src/main.ino
+=======
+double xScaledAccelerationTop (){
+  //resturns a value between -1 and 1 for the current G reading.
+  double xAccel=0;
+  double xScaledAccelTop=0;
+  xAccel = analogRead(xDataPinTop);
+  xScaledAccelTop = xAccel/1028*2*accelScale-accelScale;
+  return xScaledAccelTop;
+}
+//End top accelerometer functions
+
+
+//Bottom accelerometer functions
+
+
+double zArbatraryAccelerationBot (){
+  //resturns a value between -1 and 1 for the current G reading.
+  double zAccel=0;
+  double zScaledAccelBot=0;
+  zAccel = analogRead(zDataPinBot);
+  zScaledAccelBot = zAccel/1028*2-1;
+  return zScaledAccelBot;
+}
+
+double yArbatraryAccelerationBot (){
+  //resturns a value between -1 and 1 for the current G reading.
+  double yAccel=0;
+  double yScaledAccelBot=0;
+  yAccel = analogRead(yDataPinBot);
+  yScaledAccelBot = yAccel/1028*2-1;
+  return yScaledAccelBot;
+}
+>>>>>>> PlatformIO:obs/main.ino
+
+double xArbatraryAccelerationBot (){
+  //resturns a value between -1 and 1 for the current G reading.
+  double xAccel=0;
+  double xScaledAccelBot=0;
+  xAccel = analogRead(xDataPinBot);
+  xScaledAccelBot = xAccel/1028*2-1;
+  return xScaledAccelBot;
+}
+
+double trueArbatraryAccelerationBot(){
+  double xAccel = 0;
+  double yAccel = 0;
+  double zAccel = 0;
+  double trueAccel = 0;
+  xAccel = xArbatraryAccelerationBot();
+  yAccel = yArbatraryAccelerationBot();
+  zAccel = zArbatraryAccelerationBot();
+  trueAccel = sqrt(pow(xAccel,2) + pow(yAccel,2) + pow(zAccel,2));
+  return trueAccel;
+}
+
+double vectorScaledAccelerationBot(){
+  double xAccel = 0;
+  double yAccel = 0;
+  double zAccel = 0;
+  double trueAccel = 0;
+  xAccel = xScaledAccelerationBot();
+  yAccel = yScaledAccelerationBot();
+  zAccel = zScaledAccelerationBot();
+  trueAccel = sqrt(pow(xAccel,2) + pow(yAccel,2) + pow(zAccel,2));
+  return trueAccel;
+}
+
+double zScaledAccelerationBot (){
+  //resturns a value between -1 and 1 for the current G reading.
+  double zAccel=0;
+  double zScaledAccelBot=0;
+  zAccel = analogRead(zDataPinBot);
+  zScaledAccelBot = zAccel/1028*2*accelScale-accelScale;
+  return zScaledAccelBot;
+}
+
+double yScaledAccelerationBot (){
+  //returns a value between -1 and 1 for the current G reading.
+  double yAccel=0;
+  double yScaledAccelBot=0;
+  yAccel = analogRead(yDataPinBot);
+  yScaledAccelBot = yAccel/1028*2*accelScale-accelScale;
+  return yScaledAccelBot;
+}
+
+double xScaledAccelerationBot (){
+  //resturns a value between -1 and 1 for the current G reading.
+  double xAccel=0;
+  double xScaledAccelBot=0;
+  xAccel = analogRead(xDataPinBot);
+  xScaledAccelBot = xAccel/1028*2*accelScale-accelScale;
+  return xScaledAccelBot;
+}
+
+//end bottom accelerometer functions
 
 
 
@@ -399,7 +562,11 @@ void translatingDot(int stripPeriod){
     Serial.print(", | ");
     /* read accelerometer get values
     modify the color that is coming up*/
+<<<<<<< HEAD:src/main.ino
     deltaZ=zScaledAcceleration(zDataPinTop);
+=======
+    deltaZ=zScaledAccelerationTop();
+>>>>>>> PlatformIO:obs/main.ino
     if(deltaZ>0){
       lastShift = 1;
       dotPosition++;
@@ -557,11 +724,15 @@ void accelRainbow(int stripPeriod){
     Serial.print(", | ");
     /* read accelerometer get values
     modify the color that is coming up*/
+<<<<<<< HEAD:src/main.ino
 <<<<<<< HEAD:src/main.cpp
     deltaZ=zScaledAcceleration(zDataPinTop);
 =======
     deltaZ=trueScaledAcceleration();
 >>>>>>> Arduino_branch:src/main.ino
+=======
+    deltaZ=vectorScaledAccelerationTop();
+>>>>>>> PlatformIO:obs/main.ino
     colorShift=(deltaZ-1)*shiftAmplification+shiftFactor;
     if(abs(colorShift)-abs(lastShift)<shiftFactor){
       lastShift=colorShift;
@@ -683,7 +854,7 @@ void lightSaber(int stripPeriod){
   //picks a random color and marches it down the strand.
   int wait = stripPeriod/strip.numPixels();
   int bladeColor = 185;
-  int bladeColorVibrate = 2;
+  int bladeColorVibrate = 4;
   int bladeColorState = bladeColor;
   if (wait<marchLowerPeriodLimit){
     wait = marchLowerPeriodLimit;
@@ -702,11 +873,15 @@ void lightSaber(int stripPeriod){
       //checks that the button hasn't been pressed or knob hasn't been turned.
       running=false;
     }
+<<<<<<< HEAD:src/main.ino
 <<<<<<< HEAD:src/main.cpp
     bladeColorState = bladeColor + random(bladeColorVibrate * (-1), bladeColorVibrate) + bladeColorVibrate * (zScaledAcceleration(zDataPinTop)-1);
 =======
     bladeColorState = bladeColor + random(bladeColorVibrate * (-1), bladeColorVibrate) + bladeColorVibrate * (trueScaledAcceleration()-1);
 >>>>>>> Arduino_branch:src/main.ino
+=======
+    bladeColorState = bladeColor + random(bladeColorVibrate * (-1), bladeColorVibrate) + bladeColorVibrate * (vectorScaledAccelerationTop()-1);
+>>>>>>> PlatformIO:obs/main.ino
     for(int j=0; j< strip.numPixels(); j++){
       //runs through LED array and converts them with the color wheel and then assigns them to the strip.
       lightStringArray[j] = bladeColorState;
