@@ -1,3 +1,7 @@
+#include<arduino.h>
+#include "colorHelper.h"
+#include "lightMode.h"
+
 void rainbow(int stripPeriod) {
   int i, j;
   int wait = stripPeriod/strip.numPixels();
