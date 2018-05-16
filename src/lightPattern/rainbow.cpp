@@ -6,7 +6,7 @@
 #include "rainbow.h"
 
 void rainbow(int stripPeriod, Adafruit_WS2801 strip) {
-  int i, j;
+  unsigned int i, j;
   int wait = stripPeriod/strip.numPixels();
   for (j=0; j < 256; j++) {     // 3 cycles of all 256 colors in the wheel
     for (i=0; i < strip.numPixels(); i++) {

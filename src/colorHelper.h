@@ -5,6 +5,8 @@
   #include <SPI.h>
   #include "./lightPattern/rainbowCycle.h"
   #include "./lightPattern/rainbow.h"
+  #include "./lightPattern/colorFill.h"
+  #include "./lightPattern/colorWipe.h"
   #include "./lightPattern/genericPattern.h"
   unsigned long wheel(byte WheelPos);
   unsigned long color(byte r, byte g, byte b);
