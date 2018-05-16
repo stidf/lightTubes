@@ -6,17 +6,17 @@
 #include "../config/hardwareConfiguration.h"
 #include "colorHelper.h"
 #include <accelerometer.h>
-// #include "lightPatterns/rainbowCycle.h"
-// #include "lightPatterns/rainbow.h"
 
 void switchPress();
 void statusSerialPrintout();
 
+int stripPeriod = 250; //refresh rate of strip in ms
+int marchLowerPeriodLimit = 100; //ms
+int const maxModeTypes = 10;
 
-
-int volatile lightMode = 0;
-int volatile operatingMode = lightMode;
-unsigned long volatile buttonStamp = 0;
+volatile int lightMode = 0;
+volatile int operatingMode = lightMode;
+volatile unsigned long buttonStamp = 0;
 
 Adafruit_WS2801 strip = Adafruit_WS2801(LEDCount, dataPin, clockPin);
 accelerometer topAccel(xDataPinTop,yDataPinTop,zDataPinTop,accelScale);
@@ -90,27 +90,33 @@ void loop() {
 
     case 9:{
       operatingMode = lightMode;
-      // colorWipe(Color(0,0,255),stripPeriod);
+      colorWipe(0,0,255,stripPeriod, strip);
       delay(stripPeriod);
-      // colorFill(Color(255,0,0),stripPeriod);
+      colorFill(255,0,0,stripPeriod, strip);
       delay(stripPeriod);
     }
     break;
 
     case 10:{
       operatingMode = lightMode;
-      // colorFill(Color(255,0,0),stripPeriod);
+      colorFill(255,0,0,stripPeriod,strip);
       delay(stripPeriod);
-      // colorFill(Color(0,255,0),stripPeriod);
+      colorFill(0,255,0,stripPeriod,strip);
       delay(stripPeriod);
-      // colorFill(Color(0,0,255),stripPeriod);
+      colorFill(0,0,255,stripPeriod, strip);
       delay(stripPeriod);
+    }
+    break;
+
+    case 0:{
+      operatingMode = lightMode;
+      colorFill(0,0,0,stripPeriod,strip);
     }
     break;
 
     default:{
       operatingMode = lightMode;
-      // colorFill(Color(0,0,0),stripPeriod);
+      colorFill(0,0,0,stripPeriod,strip);
     }
     break;
   }
@@ -123,16 +129,16 @@ void loop() {
 void switchPress(){
   unsigned long timeStamp = 0;
   timeStamp = millis();
-  if(timeStamp-buttonStamp>1000){
+  if(timeStamp-buttonStamp>500){
     lightMode++;
+    if(lightMode>maxModeTypes){
+      lightMode = 0;
+    }
+    Serial.print("button pressed: ");
+    Serial.print(timeStamp);
+    Serial.print(" | Operating Mode: ");
+    Serial.println(lightMode);
   }
-  if(lightMode>maxModeTypes){
-    lightMode = 1;
-  }
-  Serial.print("button pressed: ");
-  Serial.print(timeStamp);
-  Serial.print(" | Operating Mode: ");
-  Serial.println(lightMode);
 }
 
 void statusSerialPrintout(){

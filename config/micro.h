@@ -1,6 +1,6 @@
-#ifndef ARDUINO_H
+#ifndef MICRO_H
+  #define MICRO_H
   #include <arduino.h>
-#endif
 
 //pinout for arduino micro
 
@@ -14,4 +14,8 @@ int const zDataPinTop = A2;
 int const xDataPinBot = A3;
 int const yDataPinBot = A4;
 int const zDataPinBot = A5;
-int const maxModeTypes = 10;
+
+
+
+
+#endif
