@@ -8,6 +8,8 @@
   #include "./lightPattern/colorFill.h"
   #include "./lightPattern/colorWipe.h"
   #include "./lightPattern/genericPattern.h"
+  extern int brightnessLevel;
   unsigned long wheel(byte WheelPos);
   unsigned long color(byte r, byte g, byte b);
+
 #endif
