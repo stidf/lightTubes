@@ -10,8 +10,7 @@
 void switchPress();
 void statusSerialPrintout();
 
-int stripPeriod = 250; //refresh rate of strip in ms
-int marchLowerPeriodLimit = 100; //ms
+
 int const maxModeTypes = 10;
 
 volatile int lightMode = 0;
